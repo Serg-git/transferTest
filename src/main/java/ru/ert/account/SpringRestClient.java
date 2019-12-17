@@ -15,6 +15,12 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Test Client Application
+ *
+ * @author kuyantsev
+ * Date: 06.12.2019
+ */
 public class SpringRestClient {
 
     private static final String GET_ACCOUNTS_ENDPOINT_URL = "http://localhost:8080/accounts/all";
@@ -28,35 +34,36 @@ public class SpringRestClient {
     public static void main(String[] args) {
         SpringRestClient springRestClient = new SpringRestClient();
 
-        // Step1: first create a new employee
-
-        springRestClient.createAccount(BigDecimal.valueOf(100));
-        springRestClient.createAccount(BigDecimal.valueOf(200));
-        springRestClient.createAccount(BigDecimal.valueOf(300));
+        // Step 1: first create a new account
+        springRestClient.createAccount( BigDecimal.valueOf(100));
+        springRestClient.createAccount( BigDecimal.valueOf(200));
+        springRestClient.createAccount( BigDecimal.valueOf(300));
 
         // Step 2: get new created account from step1
-        springRestClient.getAccountById(Long.valueOf(1));
+        springRestClient.getAccountById(1L);
 
-        // Step 3: get new created account from step1
-        springRestClient.getAccountById(Long.valueOf(105));
+        // Step 3: get not exist account
+        springRestClient.getAccountById(105L);
 
         // Step 4: get all accounts
         springRestClient.getAccounts();
 
         // Step 5: Update account with id = 1
-        //springRestClient.updateAccount(Long.valueOf(1), BigDecimal.valueOf(1300));
+        //springRestClient.updateAccount(1L, BigDecimal.valueOf(1300));
 
         // Step 6: Delete account with id = 3
-        //springRestClient.deleteAccount(Long.valueOf(3);
+        //springRestClient.deleteAccount(3L);
 
-        // Step 7: Transfer from 1 to 2 accounts
-        springRestClient.transfer(Long.valueOf(1), Long.valueOf(2), BigDecimal.valueOf(510));
+        // Step 7: Try transfer from 1 to 2 accounts (low balance)
+        springRestClient.transfer(1L, 2L, BigDecimal.valueOf(510));
         springRestClient.getAccounts();
 
-        springRestClient.transfer(Long.valueOf(100), Long.valueOf(2), BigDecimal.valueOf(10));
+        // Step 8: Try transfer from 100 to 2 accounts (not found account)
+        springRestClient.transfer(100L, 2L, BigDecimal.valueOf(10));
         springRestClient.getAccounts();
 
-        springRestClient.transfer(Long.valueOf(1), Long.valueOf(2), BigDecimal.valueOf(10));
+        // Step 9: Try transfer from 1 to 2 accounts (ok)
+        springRestClient.transfer(1L,2L, BigDecimal.valueOf(10));
         springRestClient.getAccounts();
 
     }
@@ -77,9 +84,6 @@ public class SpringRestClient {
         Map<String, String> params = new HashMap<String, String>();
         params.put("id", id.toString());
 
-        RestTemplate restTemplate = new RestTemplate();
-        //Account result = restTemplate.getForObject(GET_ACCOUNT_ENDPOINT_URL, Account.class, params);
-
         String result;
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -98,35 +102,13 @@ public class SpringRestClient {
     }
 
     private void createAccount(BigDecimal balance) {
-        Account newAccount = new Account(balance);
-        RestTemplate restTemplate = new RestTemplate();
+        Account newAccount = new Account(0, balance);
         Account result = restTemplate.postForObject(CREATE_ACCOUNT_ENDPOINT_URL, newAccount, Account.class);
         System.out.println(result);
     }
 
 
-    private void updateAccount(Long id, BigDecimal balance) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", id.toString());
-
-        RestTemplate restTemplate = new RestTemplate();
-
-        Account updatedAccount = restTemplate.getForObject(GET_ACCOUNT_ENDPOINT_URL, Account.class, params);
-        updatedAccount.setBalance(balance);
-
-        restTemplate.put(UPDATE_ACCOUNT_ENDPOINT_URL, updatedAccount, params);
-    }
-
-    private void deleteAccount(Long id) {
-        Map<String, String> params = new HashMap<String, String>();
-        params.put("id", id.toString());
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(DELETE_ACCOUNT_ENDPOINT_URL, params);
-    }
-
-
     private void transfer(long sourceId, Long targetId, BigDecimal amount) {
-        //TransferTransaction transaction = new TransferTransaction(Long.valueOf(1), Long.valueOf(2), BigDecimal.valueOf(510));
         TransferTransaction transaction = new TransferTransaction(sourceId, targetId, amount);
         RestTemplate restTemplate = new RestTemplate();
         TransactionResult result = restTemplate.postForObject(TRANSFER_ACCOUNT_ENDPOINT_URL, transaction, TransactionResult.class);

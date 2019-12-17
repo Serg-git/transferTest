@@ -20,7 +20,8 @@ public class Account implements Serializable {
      * Creates account
      * @param balance account balance
      */
-    public Account(BigDecimal balance) {
+    public Account(long id, BigDecimal balance) {
+        this.id = id;
         this.balance = balance.setScale(2, BigDecimal.ROUND_UP);
     }
 

@@ -10,7 +10,6 @@ import ru.ert.account.model.TransferTransaction;
 import ru.ert.account.service.AccountingService;
 
 import javax.validation.Valid;
-import java.util.Optional;
 
 /**
  * Request handler
@@ -27,7 +26,7 @@ public class Controller {
     private AccountingService service;
 
     /**
-     * Returns ResponseEntity with list of accounts
+     * All accounts
      * @return {ResponseEntity} response with list of accounts
      */
     @GetMapping("/all")
@@ -40,20 +39,13 @@ public class Controller {
     }
 
     /**
-     * Returns ResponseEntity with requested account details
+     * Get account by ID
      * @param accountId requested account ID
      * @return {ResponseEntity} response with requested account details
      */
     @GetMapping("/{accountId}")
     public ResponseEntity<Account> handleRetrieveAccountByIdRequest(@PathVariable("accountId") Long accountId) throws ResourceNotFoundException  {
-/*
-        Optional<Account> account = service.retrieveAccountById(accountId);
-        return account.isPresent() ? ResponseEntity.ok().body(account.get()) :
-                                     ResponseEntity.ok().body("Account not found for this id : " + accountId);
-*/
-        Account account = service.retrieveAccountById(accountId)
-                .orElseThrow(() -> new ResourceNotFoundException("Account not found for this id :: " + accountId));
-        return ResponseEntity.ok().body(account);
+        return ResponseEntity.ok().body(service.retrieveAccountById(accountId));
     }
 
     /**
@@ -71,8 +63,9 @@ public class Controller {
     }
 
     /**
-     * Handle
-     * @return {ResponseEntity} response with requested account details
+     * Transfer from account
+     * param in transaction
+     * @return {ResponseEntity} response with transfer status
      */
 
     @PostMapping("/transfer")

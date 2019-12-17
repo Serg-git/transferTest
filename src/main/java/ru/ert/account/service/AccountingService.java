@@ -1,5 +1,7 @@
 package ru.ert.account.service;
 
+import ru.ert.account.exception.InsufficientBalanceException;
+import ru.ert.account.exception.ResourceNotFoundException;
 import ru.ert.account.model.Account;
 import ru.ert.account.model.TransactionResult;
 import ru.ert.account.model.TransferTransaction;
@@ -20,7 +22,7 @@ public interface AccountingService {
      * @return {@link List} accounts
      * @throws Exception in case of a retrieve operation error
      */
-    List<Account> retrieveAllAccounts() throws Exception;
+    List<Account> retrieveAllAccounts() throws Exception ;
 
     /**
      * Retrieve account by its ID
@@ -28,7 +30,7 @@ public interface AccountingService {
      * @return {@link Account} account
      * @throws Exception in case of a retrieve operation error
      */
-    Optional<Account> retrieveAccountById(Long id);
+    Account retrieveAccountById(Long id) throws ResourceNotFoundException;
 
     /**
      * Create new account
@@ -36,7 +38,7 @@ public interface AccountingService {
      * @return {@link Account} account
      * @throws Exception in case of a create operation error
      */
-    Account createAccount(Account account) throws Exception;
+    Account createAccount(Account account) throws Exception ;
 
     /**
     * Transfer money from one account to another
@@ -44,6 +46,6 @@ public interface AccountingService {
     * @return {@link TransactionResult} transaction result details
     * @throws Exception in case of an error during transfer transaction
     */
-    TransactionResult transfer(TransferTransaction transaction) throws Exception;
+    TransactionResult transfer(TransferTransaction transaction) throws Exception ;
 
 }

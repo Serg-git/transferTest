@@ -2,6 +2,11 @@ package ru.ert.account.exception;
 
 import java.util.Date;
 
+/**
+ * Error Details class
+ * @author kuyantsev
+ * Date: 06.12.2019
+ */
 public class ErrorDetails {
 	private Date timestamp;
 	private String message;

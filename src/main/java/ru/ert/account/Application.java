@@ -5,6 +5,13 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
+
+/**
+ * Main Application
+ *
+ * @author kuyantsev
+ * Date: 06.12.2019
+ */
 @Configuration
 @ComponentScan
 @EnableAutoConfiguration

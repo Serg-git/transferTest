@@ -3,12 +3,10 @@ package ru.ert.account.service.impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-//import ru.ert.account.exception.InsufficientBalanceException;
 import ru.ert.account.exception.InsufficientBalanceException;
 import ru.ert.account.exception.ResourceNotFoundException;
 import ru.ert.account.model.Account;
 import ru.ert.account.model.TransactionResult;
-//import ru.ert.account.model.TransactionStatus;
 import ru.ert.account.model.TransactionStatus;
 import ru.ert.account.model.TransferTransaction;
 import ru.ert.account.repository.AccountsRepository;
@@ -29,42 +27,40 @@ import java.util.Optional;
 public class AccountingServiceImpl implements AccountingService {
     private static final String LOW_BALANS_MESSAGE = "Not enough money to complete transfer operation. " +
             "Current balance: %s, Requested amount: %s";
+    private static final String ACCOUNT_NOT_FOUND = "Account not found for this id :: ";
 
     @Autowired
     private AccountsRepository accountsRepository;
 
     @Override
-    public List<Account> retrieveAllAccounts() {
+    public List<Account> retrieveAllAccounts() throws Exception {
         return accountsRepository.findAll();
     }
 
     @Override
-    public Optional<Account> retrieveAccountById(Long id) {
-        return accountsRepository.findById(id);
+    public Account retrieveAccountById(Long id) throws ResourceNotFoundException {
+        return accountsRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(ACCOUNT_NOT_FOUND + id));
     }
 
     @Override
-    public Account createAccount(Account account) {
+    public Account createAccount(Account account) throws Exception {
         return accountsRepository.save(account);
     }
 
     @Override
     @Transactional
-    public TransactionResult transfer(TransferTransaction transaction) throws Exception {
+    public TransactionResult transfer(TransferTransaction transaction) {
         try {
-            Account source = retrieveAccountById(transaction.getSourceId()).orElseThrow(() -> new ResourceNotFoundException("Source account not found for this id :: " + transaction.getSourceId()));
-            Account target = retrieveAccountById(transaction.getTargetId()).orElseThrow(() -> new ResourceNotFoundException("Target account not found for this id :: " + transaction.getTargetId()));
-            transfer(source, target, transaction.getAmount());
+            Account source = retrieveAccountById(transaction.getSourceId());
+            Account target = retrieveAccountById(transaction.getTargetId());
+            transferAmount(source, target, transaction.getAmount());
             return new TransactionResult(TransactionStatus.SUCCESS);
-        } catch (InsufficientBalanceException e) {
-            return new TransactionResult(TransactionStatus.FAIL, e.getMessage());
-        } catch (ResourceNotFoundException e) {
+        } catch (Exception e) {
             return new TransactionResult(TransactionStatus.FAIL, e.getMessage());
         }
-
     }
 
-    private void transfer(Account source, Account target, BigDecimal amount) throws InsufficientBalanceException  {
+    private void transferAmount(Account source, Account target, BigDecimal amount) throws Exception  {
         withdraw(source, amount);
         deposit(target, amount);
         List<Account> accountList = Arrays.asList(source, target);
