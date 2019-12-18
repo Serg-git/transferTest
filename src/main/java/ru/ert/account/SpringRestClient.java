@@ -6,7 +6,6 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.ert.account.model.Account;
 import ru.ert.account.model.TransactionResult;
-import ru.ert.account.model.TransactionStatus;
 import ru.ert.account.model.TransferTransaction;
 
 import java.math.BigDecimal;
@@ -26,8 +25,6 @@ public class SpringRestClient {
     private static final String GET_ACCOUNTS_ENDPOINT_URL = "http://localhost:8080/accounts/all";
     private static final String GET_ACCOUNT_ENDPOINT_URL = "http://localhost:8080/accounts/{id}";
     private static final String CREATE_ACCOUNT_ENDPOINT_URL = "http://localhost:8080/accounts/new";
-    private static final String UPDATE_ACCOUNT_ENDPOINT_URL = "http://localhost:8080/accounts/{id}";
-    private static final String DELETE_ACCOUNT_ENDPOINT_URL = "http://localhost:8080/accounts/{id}";
     private static final String TRANSFER_ACCOUNT_ENDPOINT_URL = "http://localhost:8080/accounts/transfer";
     private static RestTemplate restTemplate = new RestTemplate();
 
