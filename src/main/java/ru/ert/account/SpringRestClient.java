@@ -48,21 +48,15 @@ public class SpringRestClient {
         // Step 4: get all accounts
         springRestClient.getAccounts();
 
-        // Step 5: Update account with id = 1
-        //springRestClient.updateAccount(1L, BigDecimal.valueOf(1300));
-
-        // Step 6: Delete account with id = 3
-        //springRestClient.deleteAccount(3L);
-
-        // Step 7: Try transfer from 1 to 2 accounts (low balance)
+        // Step 5: Try transfer from 1 to 2 accounts (low balance)
         springRestClient.transfer(1L, 2L, BigDecimal.valueOf(510));
         springRestClient.getAccounts();
 
-        // Step 8: Try transfer from 100 to 2 accounts (not found account)
+        // Step 6: Try transfer from 100 to 2 accounts (not found account)
         springRestClient.transfer(100L, 2L, BigDecimal.valueOf(10));
         springRestClient.getAccounts();
 
-        // Step 9: Try transfer from 1 to 2 accounts (ok)
+        // Step 7: Try transfer from 1 to 2 accounts (ok)
         springRestClient.transfer(1L,2L, BigDecimal.valueOf(10));
         springRestClient.getAccounts();
 

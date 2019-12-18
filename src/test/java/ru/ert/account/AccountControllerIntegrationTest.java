@@ -1,7 +1,5 @@
 package ru.ert.account;
 
-import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,25 +23,14 @@ public class AccountControllerIntegrationTest {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
-	@Autowired
-	private AccountsRepository accountsRepository;
+	//@Autowired
+	//private AccountsRepository accountsRepository;
 
 	@LocalServerPort
 	private int port;
 
 	private String getRootUrl() {
-		//return "http://localhost:8080";
 		return "http://localhost:" + port;
-	}
-
-	@Before
-	public void setup() throws Exception {
-		initClient();
-	}
-
-	@Test
-	public void contextLoads() {
-
 	}
 
 	@Test
@@ -73,38 +60,6 @@ public class AccountControllerIntegrationTest {
 		assertNotNull(postResponse);
 		assertNotNull(postResponse.getBody());
 	}
-	private void initClient() throws Exception {
-		Account account = new Account(0, BigDecimal.valueOf(100));
-		accountsRepository.save(account);
-		account = new Account(0, BigDecimal.valueOf(200));
-		accountsRepository.save(account);
-	}
-/*
-	@Test
-	public void testUpdateAccount() {
-		int id = 1;
-		Account account = restTemplate.getForObject(getRootUrl() + "/accounts/" + id, Account.class);
-		account.setBalance(500);
 
-		restTemplate.put(getRootUrl() + "/accounts/" + id, account);
 
-		Account updatedEmployee = restTemplate.getForObject(getRootUrl() + "/accounts/" + id, Account.class);
-		assertNotNull(updatedEmployee);
-	}
-
-	@Test
-	public void testDeleteAccount() {
-		int id = 2;
-		Account account = restTemplate.getForObject(getRootUrl() + "/accounts/" + id, Account.class);
-		assertNotNull(account);
-
-		restTemplate.delete(getRootUrl() + "/accounts/" + id);
-
-		try {
-			account = restTemplate.getForObject(getRootUrl() + "/employees/" + id, Account.class);
-		} catch (final HttpClientErrorException e) {
-			assertEquals(e.getStatusCode(), HttpStatus.NOT_FOUND);
-		}
-	}
-*/
 }
