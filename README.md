@@ -80,7 +80,6 @@ Response example:
 ```
 
 ### Transfer money from one account to another
-
 ```
     PUT localhost:8080/accounts/transfer
 ```
