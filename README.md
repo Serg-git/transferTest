@@ -16,15 +16,33 @@ as in-memory database.
     java -jar transferTest-${app.version}.jar 
 
 
-It loads test data into the database automatically right after the start of this application. It means that you don't need
-to waste your time on putting your own custom Accounts data into the table and you can start testing money transfers right away.
+It NO loads test data into the database automatically right after the start of this application. It means that you need
+put your own custom Accounts data into the table.
 
 So here is the list of requests you can try in this simple app:
 
-### Retrieve list of available accounts
-
+### Add new account 
 ```
-    GET localhost:8099/api/accounts/all
+    POST localhost:8080/accounts/new
+```
+Payload example:
+```
+{
+	"Id": "1",
+	"balance": "23.00"
+}
+
+Response example:
+```
+    HTTP 200 
+{
+    "id": 1,
+    "balance": "23.00"
+}
+
+### etrieve list of available accounts
+```
+    GET localhost:8080/accounts/all
 ```
 Response example:
 ```
@@ -37,25 +55,13 @@ Response example:
    {  
       "id":2,
       "balance":200
-   },
-   {  
-      "id":3,
-      "balance":377
-   },
-   {  
-      "id":4,
-      "balance":500
-   },
-   {  
-      "id":5,
-      "balance":323
    }
 ]
 ```
 ### Retrieve account by ID
 
 ```
-    GET localhost:8099/api/accounts/2
+    GET localhost:8080/accounts/2
 ```
 Response example:
 
@@ -68,14 +74,15 @@ Response example:
 ```
 ... in case of a nonexistent ID:
 ```
-    HTTP Status 404
+    HTTP 404 
+    {"timestamp":"2019-12-18T14:12:17.757+0000","message":"Account not found for this id :: 1","details":"uri=/accounts/1"}
     
 ```
 
 ### Transfer money from one account to another
 
 ```
-    PUT localhost:8099/api/transfer
+    PUT localhost:8080/accounts/transfer
 ```
 Payload example:
 ```
