@@ -1,4 +1,4 @@
-package ru.ert.account.model;
+package ru.ert.account.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonInclude;

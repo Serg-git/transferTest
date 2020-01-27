@@ -5,11 +5,10 @@ import org.springframework.web.client.HttpStatusCodeException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import ru.ert.account.model.Account;
-import ru.ert.account.model.TransactionResult;
-import ru.ert.account.model.TransferTransaction;
+import ru.ert.account.model.dto.TransactionResult;
+import ru.ert.account.model.dto.TransferTransaction;
 
 import java.math.BigDecimal;
-import java.net.URI;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;

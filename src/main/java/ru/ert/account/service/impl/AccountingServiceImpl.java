@@ -6,16 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import ru.ert.account.exception.InsufficientBalanceException;
 import ru.ert.account.exception.ResourceNotFoundException;
 import ru.ert.account.model.Account;
-import ru.ert.account.model.TransactionResult;
-import ru.ert.account.model.TransactionStatus;
-import ru.ert.account.model.TransferTransaction;
+import ru.ert.account.model.dto.TransactionResult;
+import ru.ert.account.model.dto.TransactionStatus;
+import ru.ert.account.model.dto.TransferTransaction;
 import ru.ert.account.repository.AccountsRepository;
 import ru.ert.account.service.AccountingService;
 
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Bank accounting service implementation
@@ -60,7 +59,7 @@ public class AccountingServiceImpl implements AccountingService {
         }
     }
 
-    private void transferAmount(Account source, Account target, BigDecimal amount) throws Exception  {
+    public void transferAmount(Account source, Account target, BigDecimal amount) throws Exception  {
         withdraw(source, amount);
         deposit(target, amount);
         List<Account> accountList = Arrays.asList(source, target);

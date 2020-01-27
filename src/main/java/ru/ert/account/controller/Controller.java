@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.ert.account.exception.ResourceNotFoundException;
 import ru.ert.account.model.Account;
-import ru.ert.account.model.TransferTransaction;
+import ru.ert.account.model.dto.TransferTransaction;
 import ru.ert.account.service.AccountingService;
 
 import javax.validation.Valid;

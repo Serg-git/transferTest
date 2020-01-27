@@ -9,14 +9,20 @@ import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.client.RestTemplate;
+import ru.ert.account.exception.InsufficientBalanceException;
+import ru.ert.account.exception.ResourceNotFoundException;
 import ru.ert.account.model.Account;
-import ru.ert.account.model.TransactionResult;
-import ru.ert.account.model.TransactionStatus;
-import ru.ert.account.model.TransferTransaction;
+import ru.ert.account.model.dto.TransactionResult;
+import ru.ert.account.model.dto.TransactionStatus;
+import ru.ert.account.model.dto.TransferTransaction;
+import ru.ert.account.service.impl.AccountingServiceImpl;
 
 import java.math.BigDecimal;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 
 @RunWith(SpringRunner.class)
@@ -25,11 +31,24 @@ public class AccountControllerIntegrationTest {
 	@Autowired
 	private TestRestTemplate restTemplate;
 
+	@Autowired
+	private AccountingServiceImpl acountingService;
+
 	@LocalServerPort
 	private int port;
 
 	private String getRootUrl() {
 		return "http://localhost:" + port;
+	}
+
+
+	@Test
+	public void testCreateAccount() {
+		Account account = new Account(0,BigDecimal.valueOf(100));
+		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
+		assertNotNull(createtdAccount);
+		assertNotEquals(createtdAccount.getId(), 0);
+		System.out.println(createtdAccount);
 	}
 
 	@Test
@@ -45,55 +64,74 @@ public class AccountControllerIntegrationTest {
 
 	@Test
 	public void testGetAccountById() {
-		Account account = restTemplate.getForObject(getRootUrl() + "/accounts/1", Account.class);
-		System.out.println(account);
+		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", new Account(0,BigDecimal.valueOf(100)), Account.class);
+		Account account = restTemplate.getForObject(getRootUrl() + "/accounts/"+Long.toString(createtdAccount.getId()), Account.class);
 		assertNotNull(account);
+		System.out.println(account);
+		assertEquals(account.getId(), createtdAccount.getId());
 	}
 
 	@Test
 	public void testNotFoundAccountById() {
-		Account account = restTemplate.getForObject(getRootUrl() + "/accounts/1000", Account.class);
-		assertNotNull(account);
-		assertEquals(account.getId(), 0);
-		System.out.println(account);
+		ResponseEntity<Account> postResponse = restTemplate.getForEntity(getRootUrl() + "/accounts/1000", Account.class);
+		assertNotNull(postResponse);
+		assertEquals(postResponse.getStatusCode(), HttpStatus.NOT_FOUND);
+		System.out.println(postResponse);
 	}
 
-	@Test
-	public void testCreateAccount() {
-		Account account = new Account(0,BigDecimal.valueOf(100));
-		ResponseEntity<Account> postResponse = restTemplate.postForEntity(getRootUrl() + "/accounts/new", account, Account.class);
-		assertNotNull(postResponse);
-		assertNotNull(postResponse.getBody());
-	}
+
 
 	@Test
 	public void testTransfer() {
 		Account account = new Account(1L,BigDecimal.valueOf(100));
-		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
-		assertNotNull(createtdAccount);
+		Account firstAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
+		assertNotNull(firstAccount);
 
 		account = new Account(2L,BigDecimal.valueOf(200));
-		createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
-		assertNotNull(createtdAccount);
+		Account secondAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
+		assertNotNull(secondAccount);
 
 		RestTemplate restTemplate = new RestTemplate();
 
 		// Low money
-		TransferTransaction transaction = new TransferTransaction(1L, 2L, BigDecimal.valueOf(1000));
+		TransferTransaction transaction = new TransferTransaction(Long.valueOf(firstAccount.getId()), Long.valueOf(secondAccount.getId()), BigDecimal.valueOf(1000));
 		TransactionResult result = restTemplate.postForObject(getRootUrl() + "/accounts/transfer", transaction, TransactionResult.class);
 		assertEquals(result.getCode(), TransactionStatus.FAIL.getCode());
 		System.out.println(result.toString());
 
 		// No account
-		transaction = new TransferTransaction(1000L, 2L, BigDecimal.valueOf(10));
+		transaction = new TransferTransaction(1000L, Long.valueOf(secondAccount.getId()), BigDecimal.valueOf(10));
 		result = restTemplate.postForObject(getRootUrl() + "/accounts/transfer", transaction, TransactionResult.class);
 		assertEquals(result.getCode(), TransactionStatus.FAIL.getCode());
 		System.out.println(result.toString());
 
 		// OK
-		transaction = new TransferTransaction(1L, 2L, BigDecimal.valueOf(10));
+		transaction = new TransferTransaction(Long.valueOf(firstAccount.getId()), Long.valueOf(secondAccount.getId()), BigDecimal.valueOf(10));
 		result = restTemplate.postForObject(getRootUrl() + "/accounts/transfer", transaction, TransactionResult.class);
 		assertEquals(result.getCode(), TransactionStatus.SUCCESS.getCode());
 		System.out.println(result.toString());
+	}
+
+	@Test
+	public void testInsufficientBalanceException() throws InsufficientBalanceException {
+		Account firstAccount  = new Account(1L,BigDecimal.valueOf(100));
+		Account secondAccount = new Account(2L,BigDecimal.valueOf(200));
+
+		// Low money
+		Throwable thrown = catchThrowable(() -> {
+			acountingService.transferAmount(firstAccount, secondAccount, BigDecimal.valueOf(1000));
+		});
+		assertThat(thrown).isInstanceOf(InsufficientBalanceException.class);
+		assertThat(thrown.getMessage()).isNotBlank();
+	}
+
+	@Test
+	public void testResourceNotFoundException() throws ResourceNotFoundException {
+		// No account
+		Throwable thrown = catchThrowable(() -> {
+			acountingService.retrieveAccountById(1000l);
+		});
+		assertThat(thrown).isInstanceOf(ResourceNotFoundException.class);
+		assertThat(thrown.getMessage()).isNotBlank();
 	}
 }

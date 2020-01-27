@@ -1,14 +1,11 @@
 package ru.ert.account.service;
 
-import ru.ert.account.exception.InsufficientBalanceException;
 import ru.ert.account.exception.ResourceNotFoundException;
 import ru.ert.account.model.Account;
-import ru.ert.account.model.TransactionResult;
-import ru.ert.account.model.TransferTransaction;
+import ru.ert.account.model.dto.TransactionResult;
+import ru.ert.account.model.dto.TransferTransaction;
 
-import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Service for using bank accounting

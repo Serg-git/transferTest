@@ -1,4 +1,4 @@
-package ru.ert.account.model;
+package ru.ert.account.model.dto;
 
 /**
  * Transaction statuses
