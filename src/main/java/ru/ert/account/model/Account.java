@@ -17,12 +17,20 @@ public class Account implements Serializable {
     private BigDecimal balance;
 
     /**
-     * Creates account
+     * Creates account with id, balance
      * @param balance account balance
      */
     public Account(long id, BigDecimal balance) {
         this.id = id;
         this.balance = balance.setScale(2, BigDecimal.ROUND_UP);
+    }
+
+    /**
+     * Creates account with balance
+     * @param balance account balance
+     */
+    public Account(BigDecimal balance) {
+        this(0, balance);
     }
 
     public Account() {

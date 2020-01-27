@@ -44,8 +44,7 @@ public class AccountControllerIntegrationTest {
 
 	@Test
 	public void testCreateAccount() {
-		Account account = new Account(0,BigDecimal.valueOf(100));
-		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
+		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", new Account(BigDecimal.valueOf(100)), Account.class);
 		assertNotNull(createtdAccount);
 		assertNotEquals(createtdAccount.getId(), 0);
 		System.out.println(createtdAccount);
@@ -64,11 +63,11 @@ public class AccountControllerIntegrationTest {
 
 	@Test
 	public void testGetAccountById() {
-		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", new Account(0,BigDecimal.valueOf(100)), Account.class);
+		Account createtdAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", new Account(BigDecimal.valueOf(100)), Account.class);
 		Account account = restTemplate.getForObject(getRootUrl() + "/accounts/"+Long.toString(createtdAccount.getId()), Account.class);
 		assertNotNull(account);
-		System.out.println(account);
 		assertEquals(account.getId(), createtdAccount.getId());
+		System.out.println(account);
 	}
 
 	@Test
@@ -83,11 +82,11 @@ public class AccountControllerIntegrationTest {
 
 	@Test
 	public void testTransfer() {
-		Account account = new Account(1L,BigDecimal.valueOf(100));
+		Account account = new Account(BigDecimal.valueOf(100));
 		Account firstAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
 		assertNotNull(firstAccount);
 
-		account = new Account(2L,BigDecimal.valueOf(200));
+		account = new Account(BigDecimal.valueOf(200));
 		Account secondAccount = restTemplate.postForObject(getRootUrl() + "/accounts/new", account, Account.class);
 		assertNotNull(secondAccount);
 
@@ -114,8 +113,8 @@ public class AccountControllerIntegrationTest {
 
 	@Test
 	public void testInsufficientBalanceException() throws InsufficientBalanceException {
-		Account firstAccount  = new Account(1L,BigDecimal.valueOf(100));
-		Account secondAccount = new Account(2L,BigDecimal.valueOf(200));
+		Account firstAccount  = new Account(BigDecimal.valueOf(100));
+		Account secondAccount = new Account(BigDecimal.valueOf(200));
 
 		// Low money
 		Throwable thrown = catchThrowable(() -> {

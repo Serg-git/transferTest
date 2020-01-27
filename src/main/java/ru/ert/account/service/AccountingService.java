@@ -30,12 +30,12 @@ public interface AccountingService {
     Account retrieveAccountById(Long id) throws ResourceNotFoundException;
 
     /**
-     * Create new account
+     * Save account
      * @param account
      * @return {@link Account} account
      * @throws Exception in case of a create operation error
      */
-    Account createAccount(Account account) throws Exception ;
+    Account saveAccount(Account account) throws Exception ;
 
     /**
     * Transfer money from one account to another

@@ -92,7 +92,7 @@ public class SpringRestClient {
     }
 
     private void createAccount(BigDecimal balance) {
-        Account newAccount = new Account(0, balance);
+        Account newAccount = new Account(balance);
         Account result = restTemplate.postForObject(CREATE_ACCOUNT_ENDPOINT_URL, newAccount, Account.class);
         System.out.println(result);
     }

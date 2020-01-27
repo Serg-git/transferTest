@@ -56,7 +56,7 @@ public class Controller {
     @PostMapping("/new")
     public ResponseEntity createAccount(@Valid @RequestBody Account account) {
         try {
-            return ResponseEntity.ok(service.createAccount(account));
+            return ResponseEntity.ok(service.saveAccount(account));
         } catch (Exception e) {
             return ResponseEntity.status(500).build();
         }

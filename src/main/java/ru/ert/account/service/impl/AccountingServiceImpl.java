@@ -42,7 +42,7 @@ public class AccountingServiceImpl implements AccountingService {
     }
 
     @Override
-    public Account createAccount(Account account) throws Exception {
+    public Account saveAccount(Account account) throws Exception {
         return accountsRepository.save(account);
     }
 
